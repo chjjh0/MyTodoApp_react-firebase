@@ -14,9 +14,7 @@ class Login extends Component {
         signInOptions: [
             app.auth.GoogleAuthProvider.PROVIDER_ID,
         ],
-        callbacks: {
-            signInSuccessWithAuthResult : () => this.props.login()
-        }
+        callbacks: {signInSuccessWithAuthResult : () => {window.location.href = '/main'}}
     }
 
     onChangeHandler = e => {
@@ -29,13 +27,20 @@ class Login extends Component {
     onClickHandler = e => {
         e.preventDefault();
 
-        firebase.loginByEmail(this.state.username, this.state.password)
-            .then( r => this.props.login())
-    }
-
-    onGoogleLogin = e => {
-        e.preventDefault();
-        firebase.loginByGoogle();
+        if (this.state.username === '' || this.state.password === '') {
+            // check blank
+            alert('아이디 또는 패스워드가 빈칸입니다')
+        } else {
+            firebase.loginByEmail(this.state.username, this.state.password).then((res) => {
+                if (res === undefined) {
+                    // login failed
+                } else {
+                    // login successful
+                    window.location.href = '/main';
+                }
+            })
+        }
+        
     }
 
     render() {

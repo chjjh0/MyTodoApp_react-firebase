@@ -11,16 +11,8 @@ class Firebase {
   }
 
   loginByEmail(email, password) {
-    return this.auth.signInWithEmailAndPassword(email, password);
-  }
-
-  loginByGoogle() {
-    return this.auth.onAuthStateChanged( (user) => {
-      if (user) {
-        return user.uid;
-      } else {
-        console.log('구글 로그인 실패')
-      }
+    return this.auth.signInWithEmailAndPassword(email, password).catch(err => {
+      alert(err.message)
     });
   }
 }
