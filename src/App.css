@@ -8,11 +8,29 @@
 .field {
     overflow: hidden;
     position: relative;
+    overflow: hidden;
 }
 
-.field button.is-danger {
+.field .control {
+    width: 80%;
+}
+
+.field .btnBox {
+    width: 20%;
     position: absolute;
-    margin-left: 50px;
+    right: 0;
+}
+
+.field .btnBox .button {
+    margin-left: 30px
+}
+
+.field .btnBox .update {
+    background: rgb(174, 75, 255);
+}
+
+.field .btnBox .is-danger {
+    margin-left: 20px
 }
 
 .progress1 {

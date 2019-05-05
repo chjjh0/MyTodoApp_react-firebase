@@ -12,6 +12,8 @@ class Main extends Component {
             tasks: [],
             task: '',
             login: false,
+            updateBtn: false,
+            updateKey: '',
             userInfo: '',
             displayName: '',
             profilePhoto: ''
@@ -20,7 +22,7 @@ class Main extends Component {
             if (res) {
                 this.displayTodo();
             } else {
-                alert('오류가 발생했습니다, 다시 시도 해주세요');
+                alert('오류가 발생했습니다, 새로고침이 필요합니다.');
             }
         }
         );
@@ -30,7 +32,7 @@ class Main extends Component {
         return new Promise((resolve, reject) => {
             firebase.auth.onAuthStateChanged((user) => {
                 if (user) {
-                    var userInfo, displayName, profilePhoto;
+                    let userInfo, displayName, profilePhoto;
 
                     if (user.displayName) {
                         userInfo = user.uid;
@@ -61,48 +63,96 @@ class Main extends Component {
         firebase.auth.signOut();
     }
 
+    checkBlank = () => {
+        if (this.state.task === '') {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     onClickHandler = (e) => {
         e.preventDefault();
-        const firestore = firebase.firestore;
-        const updateDate = new Date().getTime();
 
-        firestore.collection(this.state.userInfo).add({ todo: this.state.task, updateDate })
-            .then(res => {
-                var tasks = [...this.state.tasks, { todo: this.state.task, id: res.id, updateDate: updateDate }];
+        if (e.target.classList.contains('update')) {
+            this.onUpdateFire();
+            return;
+        } else {
+            if (this.checkBlank()) {
+                alert('할 일을 작성해주세요!')
+            } else {
+                const firestore = firebase.firestore;
+                const updateDate = new Date().getTime();
 
-                tasks.sort((a, b) => {
-                    return a.updateDate > b.updateDate ? -1 : a.updateDate < b.updateDate ? 1 : 0;
-                });
+                firestore.collection(this.state.userInfo).add({ todo: this.state.task, updateDate })
+                    .then(res => {
+                        let tasks = [...this.state.tasks, { todo: this.state.task, id: res.id, updateDate: updateDate }];
 
-                this.setState({
-                    tasks,
-                    task: ''
-                });
-            });
+                        tasks.sort((a, b) => {
+                            return a.updateDate > b.updateDate ? -1 : a.updateDate < b.updateDate ? 1 : 0;
+                        });
+
+                        this.setState({
+                            tasks,
+                            task: ''
+                        });
+                    });
+            }
+        }
+    }
+
+    initInput = (e) => {
+        e.value = '';
+        this.setState({ task: '' })
+    }
+
+    onCancelHandler = (e) => {
+        e.preventDefault();
+
+        const inputField = document.querySelector('form.field').querySelector('div.control').children[0];
+        const btn = document.querySelector('form.field').querySelector('.btnBox').children[0];
+
+        this.initInput(inputField);
+        btn.classList.remove('update');
+        btn.classList.add('add');
+
+        this.setState({
+            task: '',
+            updateKey: '',
+            updateBtn: false
+        })
     }
 
     onChangeHandler = (e) => {
-        console.log(e.target.value)
         this.setState({
             task: e.target.value
         })
     }
 
     onUpdateHandler = (id, e) => {
-        // UI 
-        // document.querySelector('button.is-danger').style.color = 'blue'
         const ele = e.target.parentElement.previousElementSibling.children[0];
         const content = ele.innerHTML;
-        const inputField = document.querySelector('form.field').querySelector('div.is-expanded').children[0];
+        const inputField = document.querySelector('form.field').querySelector('div.control').children[0];
+        const btn = document.querySelector('form.field').querySelector('.btnBox').children[0];
 
         inputField.value = content;
         inputField.focus();
 
-        // const firestore = firebase.firestore;
+        btn.classList.remove('add');
+        btn.classList.add('update');
 
-        // firestore.collection(this.state.userInfo).doc(id).update({todo:'수정'}).then((res) => {
-        //     console.log(res)
-        // });
+        this.setState({
+            updateBtn: true,
+            updateKey: id
+        })
+    }
+
+    onUpdateFire = () => {
+        const firestore = firebase.firestore;
+
+        firestore.collection(this.state.userInfo).doc(this.state.updateKey).update({ todo: this.state.task }).then(() => {
+            this.displayTodo();
+        });
     }
 
     onDeleteHandler = (id) => {
@@ -117,18 +167,19 @@ class Main extends Component {
 
     displayTodo = () => {
         const firestore = firebase.firestore;
-        const tasks = [...this.state.tasks]
+        const inputField = document.querySelector('form.field').querySelector('div.control').children[0];
+        const tasks = [];
 
-        firestore.collection(this.state.userInfo).orderBy('updateDate', 'desc').get()
-            .then(docs => {
+        firestore.collection(this.state.userInfo)
+            .orderBy('updateDate', 'desc').get().then(docs => {
                 docs.forEach(doc => {
                     tasks.push({ todo: doc.data().todo, id: doc.id, updateDate: doc.data().updateDate })
                 });
 
+                this.initInput(inputField);
                 this.setState({
                     tasks
                 })
-
             })
     }
 
@@ -151,8 +202,10 @@ class Main extends Component {
                             </div>
                             <TaskAdd
                                 value={this.state.task}
+                                updateBtn={this.state.updateBtn}
                                 onChangeHandler={this.onChangeHandler}
                                 onClickHandler={this.onClickHandler}
+                                onCancelHandler={this.onCancelHandler}
                             />
                             <div>
                                 <TaskDisplay

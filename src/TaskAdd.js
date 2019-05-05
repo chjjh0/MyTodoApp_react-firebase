@@ -1,14 +1,14 @@
 import React from 'react';
 
-const TaskAdd = ({ value, onChangeHandler, onClickHandler}) => {
+const TaskAdd = ({ value, updateBtn, onChangeHandler, onClickHandler, onCancelHandler}) => {
     return (
       <form className="field has-addons">
-        <div className="control is-expanded">
+        <div className="control">
             <input className="input" value={value} onChange={onChangeHandler} onFocus={onChangeHandler}></input>
         </div>
-        <div className="control">
-            <button className="button is-primary" onClick={onClickHandler}>저장</button>
-            <button className="button is-danger" onClick={onClickHandler}>취소</button>
+        <div className="btnBox">
+            <button className="button is-primary add" onClick={onClickHandler}>{updateBtn ? '수정' : '저장'}</button>
+            <button className="button is-danger" onClick={ onCancelHandler}>취소</button>
         </div>
       </form>
     )
