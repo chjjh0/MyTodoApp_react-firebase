@@ -4,6 +4,8 @@ import firebase from './firebase';
 import TaskDisplay from './TaskDisplay';
 import TaskAdd from './TaskAdd';
 
+import './main.css';
+
 class Main extends Component {
 
     constructor(props) {
@@ -24,8 +26,7 @@ class Main extends Component {
             } else {
                 alert('오류가 발생했습니다, 새로고침이 필요합니다.');
             }
-        }
-        );
+        });
     }
 
     checkLogin = () => {
@@ -59,7 +60,7 @@ class Main extends Component {
     }
 
     logoutBtn = () => {
-        localStorage.removeItem('firebaseui::rememberedAccounts')
+        localStorage.removeItem('firebaseui::rememberedAccounts');
         firebase.auth.signOut();
     }
 
@@ -107,7 +108,9 @@ class Main extends Component {
     }
 
     onCancelHandler = (e) => {
-        e.preventDefault();
+        if (e) {
+            e.preventDefault();
+        }
 
         const inputField = document.querySelector('form.field').querySelector('div.control').children[0];
         const btn = document.querySelector('form.field').querySelector('.btnBox').children[0];
@@ -151,6 +154,7 @@ class Main extends Component {
         const firestore = firebase.firestore;
 
         firestore.collection(this.state.userInfo).doc(this.state.updateKey).update({ todo: this.state.task }).then(() => {
+            this.onCancelHandler();
             this.displayTodo();
         });
     }

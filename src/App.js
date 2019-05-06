@@ -3,7 +3,6 @@ import { Route } from 'react-router-dom';
 
 import Login from './Login';
 import Main from './main';
-import './app.css';
 
 class MyBookApp extends Component {
 
@@ -38,7 +37,6 @@ class MyBookApp extends Component {
             // 로그인 필요
         }
     }
-
 
     render() {
         return (
