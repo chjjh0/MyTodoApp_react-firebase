@@ -12,6 +12,6 @@
 ■ Login page
 
 <div>
-    <img src='./p_image/login.PNG' />
+    <img src='./p_image/login.png' />
 </div>
 <br><br><br><br>
