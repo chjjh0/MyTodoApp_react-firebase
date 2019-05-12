@@ -15,3 +15,10 @@
     <img src='./p_image/login.png' />
 </div>
 <br><br><br><br>
+
+■ Main page
+
+<div>
+    <img src='./p_image/main.jpg' />
+</div>
+<br><br><br><br>
