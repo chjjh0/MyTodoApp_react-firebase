@@ -8,7 +8,7 @@ const TaskAdd = ({ value, updateBtn, onChangeHandler, onClickHandler, onCancelHa
         </div>
         <div className="btnBox">
             <button className="button is-primary add" onClick={onClickHandler}>{updateBtn ? '수정' : '저장'}</button>
-            <button className="button is-danger" onClick={ onCancelHandler}>취소</button>
+            <button className="button is-danger" onClick={onCancelHandler}>취소</button>
         </div>
       </form>
     )
